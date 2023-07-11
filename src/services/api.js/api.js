@@ -10,7 +10,6 @@ function tokenProvider(auth) {
   };
 }
 
-
 // --------- USER ---------
 function signIn(data, success, failure) {
   axios
@@ -49,32 +48,27 @@ function signOut(data, success) {
 
 // --------- TRANSACTIONS  ---------
 function listTransactions(auth, success) {
-    axios
-      .get("/transactions", tokenProvider(auth))
-      .then((res) => {
-        success(res.data);
-      })
-      .catch((err) => {
-        alert(err);
-      });
-  }
-  
-  function addTransaction(obj, auth, success, failure) {
-    axios
-      .post(`/addTransaction/`, obj, tokenProvider(auth))
-      .then(() => {
-        success();
-      })
-      .catch((err) => {
-        alert(err.response.data);
-        failure();
-      });
-  }
+  console.log(auth);
+  axios
+    .get("/transactions", tokenProvider(auth))
+    .then((res) => {
+      success(res.data);
+    })
+    .catch((err) => {
+      alert(err.response.data);
+    });
+}
 
-export { 
-    signIn,
-    signUp,
-    signOut,
-    listTransactions,
-    addTransaction
-};
+function addTransaction(obj, auth, success, failure) {
+  axios
+    .post(`/addTransaction/`, obj, tokenProvider(auth))
+    .then(() => {
+      success();
+    })
+    .catch((err) => {
+      alert(err.response.data);
+      failure();
+    });
+}
+
+export { signIn, signUp, signOut, listTransactions, addTransaction };

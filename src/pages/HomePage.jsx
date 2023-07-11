@@ -7,7 +7,6 @@ import { v4 as uuid } from "uuid";
 import { useNavigate } from "react-router-dom";
 import { listTransactions } from "../services/api.js/api";
 
-
 export default function HomePage() {
   const { auth, userSignOut } = useContext(UserContext);
   const navigate = useNavigate();
@@ -15,13 +14,26 @@ export default function HomePage() {
   const [transactions, setTransactions] = useState([]);
   const [balance, setBalance] = useState(0);
 
-  useEffect(() => {
-    function success(data) {
-      setTransactions(data);
-    }
+  function success(data) {
+    if (!auth) navigate("/");
+    setTransactions(data);
+  }
 
+  useEffect(() => {
     listTransactions(auth.token, success);
   }, []);
+
+  useEffect(() => {
+    let calculatedBalance = 0;
+    transactions.forEach((transaction) => {
+      if (transaction.type === "entrada") {
+        calculatedBalance += transaction.amount;
+      } else {
+        calculatedBalance -= transaction.amount;
+      }
+    });
+    setBalance(calculatedBalance);
+  }, [transactions]);
 
   function handleUserSignOut() {
     navigate("/");
@@ -40,11 +52,6 @@ export default function HomePage() {
       <TransactionsContainer>
         <ul>
           {transactions.map((transaction) => {
-            if (transaction.type === "entrada") {
-              balance += transaction.amount;
-            } else {
-              balance -= transaction.amount;
-            }
             return (
               <ListItemContainer id={transaction._id} key={transaction._id}>
                 <div>
