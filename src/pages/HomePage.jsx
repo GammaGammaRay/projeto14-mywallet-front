@@ -62,9 +62,9 @@ export default function HomePage() {
               <ListItemContainer id={transaction._id} key={transaction._id}>
                 <div>
                   <span>{transaction.date}</span>
-                  <strong>{transaction.description}</strong>
+                  <strong data-test="registry-name">{transaction.description}</strong>
                 </div>
-                <Value
+                <Value data-test="registry-amount"
                   color={
                     transaction.type === "entrada" ? "positivo" : "negativo"
                   }
