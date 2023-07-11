@@ -5,7 +5,7 @@ import { AiOutlineMinusCircle, AiOutlinePlusCircle } from "react-icons/ai";
 import { UserContext } from "../contexts/UserContext";
 import { v4 as uuid } from "uuid";
 import { useNavigate } from "react-router-dom";
-
+import { listTransactions } from "../services/api.js/api";
 export default function HomePage() {
   const { auth, userSignOut } = useContext(UserContext);
   const navigate = useNavigate();
@@ -21,20 +21,80 @@ export default function HomePage() {
     // GetTransactions(localStorage.getItem("token"), updateTransactions);
   }, []);
 
+  useEffect(() => {
+    function success(data) {
+      if (data.length === 0) {
+        setLoading(false);
+      }
+      setTransactions(data);
+    }
+    listTransactions(auth.token, success);
+  }, []);
+
+  function updateTransactions(userTransactions, error) {
+    if (error) {
+      alert(userTransactions.data.response.message);
+      return;
+    }
+
+    setTransactions(userTransactions.transactions.reverse());
+    setUser(userTransactions.username);
+    setBalance(userTransactions.balance);
+  }
+
   function handleUserSignOut() {
     navigate("/");
     userSignOut();
   }
-
+  {
+    /* <ul>
+          {transactions.map((transaction) => {
+            if (transaction.type === "entrada") {
+              balance += transaction.amount;
+            } else {
+              balance -= transaction.amount;
+            }
+            return (
+              <ListItemContainer>
+                id={transaction._id}
+                key={transaction._id}
+                transactions={transactions}
+                setTransactions={setTransactions}
+                date={transaction.date}
+                description={transaction.description}
+                amount={transaction.amount}
+                type={transaction.type}
+              </>
+            );
+          })}
+        </ul> */
+  }
   return (
     <HomeContainer>
       <Header>
         <h1>{`Olá, ${auth.name}`}</h1>
-        <BiExit onClick={handleUserSignOut} />
+        <BiExit data-test="logout" onClick={handleUserSignOut} />
       </Header>
 
       <TransactionsContainer>
         <ul>
+          {transactions.map((transaction) => {
+            if (transaction.type === "entrada") {
+              balance += transaction.amount;
+            } else {
+              balance -= transaction.amount;
+            }
+            return (
+              <ListItemContainer id={transaction._id} key={transaction._id}>
+                <div>
+                  <span>{transaction.date}</span>
+                  <strong>{transaction.description}</strong>
+                </div>
+                <Value color={"negativo"}>{transaction.amount}</Value>
+              </ListItemContainer>
+            );
+          })}
+
           <ListItemContainer>
             <div>
               <span>30/11</span>
@@ -61,13 +121,23 @@ export default function HomePage() {
       </TransactionsContainer>
 
       <ButtonsContainer>
-        <button onClick={() => {navigate("/nova-transacao/entrada")}}>
+        <button
+          data-test="new-income"
+          onClick={() => {
+            navigate("/nova-transacao/entrada");
+          }}
+        >
           <AiOutlinePlusCircle />
           <p>
             Nova <br /> entrada
           </p>
         </button>
-        <button onClick={() => {navigate("/nova-transacao/saida")}}>
+        <button
+          data-test="new-expense"
+          onClick={() => {
+            navigate("/nova-transacao/saida");
+          }}
+        >
           <AiOutlineMinusCircle />
           <p>
             Nova <br />

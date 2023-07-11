@@ -37,6 +37,7 @@ export default function SignInPage() {
       <form onSubmit={handleSignIn}>
         <MyWalletLogo />
         <input
+          data-test="email"
           placeholder="E-mail"
           type="email"
           autoComplete="email"
@@ -45,6 +46,7 @@ export default function SignInPage() {
           required
         />
         <input
+          data-test="password"
           placeholder="Senha"
           type="password"
           autoComplete="current-password"

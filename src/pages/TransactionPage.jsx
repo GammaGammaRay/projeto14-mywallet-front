@@ -7,10 +7,12 @@ import { UserContext } from "../contexts/UserContext";
 export default function TransactionsPage() {
   const { tipo } = useParams();
   const { auth } = useContext(UserContext);
-  const [value, setValue] = useState(0);
+  const [balance, setBalance] = useState(0);
   const [description, setDescription] = useState("");
   const [attemptingTransaction, setAttemptingTransaction] = useState(false);
   const navigate = useNavigate();
+
+  
 
   function handleTransaction(e) {
     e.preventDefault();
@@ -18,7 +20,7 @@ export default function TransactionsPage() {
 
     const data = {
       description,
-      amount: value,
+      amount: balance,
       type: tipo,
     };
 
@@ -39,17 +41,23 @@ export default function TransactionsPage() {
       <h1>Nova TRANSAÇÃO</h1>
       <form onSubmit={handleTransaction}>
         <input
+          data-test="registry-amount-input"
           placeholder="Valor"
-          value={value}
+          value={balance}
           type="number"
-          onChange={(e) => setValue(e.target.value)}
+          onChange={(e) => setBalance(e.target.value)}
         />
         <input
+          data-test="registry-name-input"
           placeholder="Descrição"
           type="text"
           onChange={(e) => setDescription(e.target.value)}
         />
-        <button disabled={attemptingTransaction} type="submit">
+        <button
+          data-test="registry-save"
+          disabled={attemptingTransaction}
+          type="submit"
+        >
           Salvar TRANSAÇÃO
         </button>
       </form>

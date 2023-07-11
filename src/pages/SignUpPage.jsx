@@ -85,7 +85,7 @@ export default function SignUpPage() {
           autoComplete="new-password"
           required
         />
-        <button type="submit" disabled={attemptingSignUp}>
+        <button data-test="sign-up-submit" type="submit" disabled={attemptingSignUp}>
           Cadastrar
         </button>
       </form>
