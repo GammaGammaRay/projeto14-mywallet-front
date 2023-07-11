@@ -1,47 +1,47 @@
 import { Link, useNavigate } from "react-router-dom";
 import styled from "styled-components";
-import MyWalletLogo from "../components/MyWalletLogo";
-import UserProvider from "../contexts/UserContext";
 import { useState } from "react";
 import { signUp } from "../services/api.js/api";
+
+import MyWalletLogo from "../components/MyWalletLogo";
 
 export default function SignUpPage() {
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [newPasswordConfirm, setNewPasswordConfirm] = useState("");
-  const [attemptSignUp, setAttemptSignUp] = useState(false);
+  const [attemptingSignUp, setAttemptingSignUp] = useState(false);
 
   const navigate = useNavigate();
 
-  function handleRegisterUser() {
+  function handleRegisterUser(e) {
+    e.preventDefault();
     if (!username || !email || !newPassword || !newPasswordConfirm) {
-      return alert("All fields are required!");
+      return alert("Todos os campos são obrigatórios!");
     } else if (newPassword !== newPasswordConfirm) {
-      return alert("Passwords do not match!");
+      return alert("Senhas não !");
     } else {
       registerUser();
     }
   }
 
   function registerUser(e) {
-    e.preventDefault();
-    setAttemptSignUp(true);
+    setAttemptingSignUp(true);
 
     const data = {
       name: username,
       email,
-      password: newPassword
-    }
+      password: newPassword,
+    };
 
     function signUpSuccess() {
       navigate("/");
     }
 
     function signUpFailure() {
-      setAttemptSignUp(false);
+      setAttemptingSignUp(false);
     }
-    
+
     signUp(data, signUpSuccess, signUpFailure);
   }
 
@@ -85,7 +85,9 @@ export default function SignUpPage() {
           autoComplete="new-password"
           required
         />
-        <button type="submit" disabled={attemptSignUp}>Cadastrar</button>
+        <button type="submit" disabled={attemptingSignUp}>
+          Cadastrar
+        </button>
       </form>
 
       <Link to={"/"}>Já tem uma conta? Entre agora!</Link>

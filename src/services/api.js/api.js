@@ -46,8 +46,34 @@ function signOut(data, success, failure) {
     });
 }
 
+
+function listTransactions(auth, success, failure) {
+    axios
+      .get("/transactions", tokenProvider(auth))
+      .then((res) => {
+        success(res.data);
+      })
+      .catch((error) => {
+        alert(error.response.data);
+        failure();
+      });
+  }
+  function addTransaction(obj, auth, success, failure) {
+    axios
+      .post(`/addTransaction/`, obj, tokenProvider(auth))
+      .then(() => {
+        success();
+      })
+      .catch((error) => {
+        alert(error.response.data);
+        failure();
+      });
+  }
+
 export { 
     signIn,
     signUp,
-    signOut 
+    signOut,
+    listTransactions,
+    addTransaction
 };

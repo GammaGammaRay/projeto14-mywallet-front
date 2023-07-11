@@ -1,17 +1,36 @@
-import styled from "styled-components"
-import { useContext, useState } from "react";
-import { BiExit } from "react-icons/bi"
-import { AiOutlineMinusCircle, AiOutlinePlusCircle } from "react-icons/ai"
+import styled from "styled-components";
+import { useContext, useState, useEffect } from "react";
+import { BiExit } from "react-icons/bi";
+import { AiOutlineMinusCircle, AiOutlinePlusCircle } from "react-icons/ai";
 import { UserContext } from "../contexts/UserContext";
+import { v4 as uuid } from "uuid";
+import { useNavigate } from "react-router-dom";
+
 export default function HomePage() {
-  const {userName} = useContext(UserContext)
-  
+  const { auth, userSignOut } = useContext(UserContext);
+  const navigate = useNavigate();
+
+  const [transactions, setTransactions] = useState([]);
+  const [balance, setBalance] = useState(0);
+
+  useEffect(() => {
+    if (localStorage.getItem("auth") == undefined) {
+      navigate("/");
+      return;
+    }
+    // GetTransactions(localStorage.getItem("token"), updateTransactions);
+  }, []);
+
+  function handleUserSignOut() {
+    navigate("/");
+    userSignOut();
+  }
 
   return (
     <HomeContainer>
       <Header>
-        <h1>Olá, {userName}</h1>
-        <BiExit />
+        <h1>{`Olá, ${auth.name}`}</h1>
+        <BiExit onClick={handleUserSignOut} />
       </Header>
 
       <TransactionsContainer>
@@ -35,31 +54,36 @@ export default function HomePage() {
 
         <article>
           <strong>Saldo</strong>
-          <Value color={"positivo"}>2880,00</Value>
+          <Value color={balance >= 0 ? "positivo" : "negativo"}>
+            {balance.toFixed(2).toString().replace(".", ",")}
+          </Value>
         </article>
       </TransactionsContainer>
-
 
       <ButtonsContainer>
         <button>
           <AiOutlinePlusCircle />
-          <p>Nova <br /> entrada</p>
+          <p>
+            Nova <br /> entrada
+          </p>
         </button>
         <button>
           <AiOutlineMinusCircle />
-          <p>Nova <br />saída</p>
+          <p>
+            Nova <br />
+            saída
+          </p>
         </button>
       </ButtonsContainer>
-
     </HomeContainer>
-  )
+  );
 }
 
 const HomeContainer = styled.div`
   display: flex;
   flex-direction: column;
   height: calc(100vh - 50px);
-`
+`;
 const Header = styled.header`
   display: flex;
   align-items: center;
@@ -68,7 +92,7 @@ const Header = styled.header`
   margin-bottom: 15px;
   font-size: 26px;
   color: white;
-`
+`;
 const TransactionsContainer = styled.article`
   flex-grow: 1;
   background-color: #fff;
@@ -80,19 +104,19 @@ const TransactionsContainer = styled.article`
   justify-content: space-between;
   article {
     display: flex;
-    justify-content: space-between;   
+    justify-content: space-between;
     strong {
       font-weight: 700;
       text-transform: uppercase;
     }
   }
-`
+`;
 const ButtonsContainer = styled.section`
   margin-top: 15px;
   margin-bottom: 0;
   display: flex;
   gap: 15px;
-  
+
   button {
     width: 50%;
     height: 115px;
@@ -105,12 +129,12 @@ const ButtonsContainer = styled.section`
       font-size: 18px;
     }
   }
-`
+`;
 const Value = styled.div`
   font-size: 16px;
   text-align: right;
   color: ${(props) => (props.color === "positivo" ? "green" : "red")};
-`
+`;
 const ListItemContainer = styled.li`
   display: flex;
   justify-content: space-between;
@@ -122,4 +146,4 @@ const ListItemContainer = styled.li`
     color: #c6c6c6;
     margin-right: 10px;
   }
-`
+`;

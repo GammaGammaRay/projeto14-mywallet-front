@@ -1,32 +1,35 @@
 import styled from "styled-components";
 import { Link } from "react-router-dom";
 import MyWalletLogo from "../components/MyWalletLogo";
-import { useState } from "react";
+import { useContext, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { signUp } from "../services/api.js/api";
+import { signIn } from "../services/api.js/api";
+import { UserContext } from "../contexts/UserContext";
 
 export default function SignInPage() {
+  const { userSignIn } = useContext(UserContext);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [attemptSignIn, setAttemptSignIn] = useState(false);
+  const [attempingSignIn, setAttempingSignIn] = useState(false);
   const navigate = useNavigate();
-  
+
   function handleSignIn(e) {
     e.preventDefault();
-    setAttemptSignIn(true);
+    setAttempingSignIn(true);
 
     const data = {
       email,
       password,
     };
 
-    function signInSuccess() {
+    function signInSuccess(token) {
+      userSignIn(token);
       navigate("/home");
     }
     function signInFailure() {
-      setAttemptSignIn(false);
+      setAttempingSignIn(false);
     }
-    signUp(data, signInSuccess, signInFailure);
+    signIn(data, signInSuccess, signInFailure);
   }
 
   return (
@@ -36,8 +39,9 @@ export default function SignInPage() {
         <input
           placeholder="E-mail"
           type="email"
-          autoComplete="username"
+          autoComplete="email"
           onChange={(e) => setEmail(e.target.value)}
+          disabled={attempingSignIn}
           required
         />
         <input
@@ -45,9 +49,14 @@ export default function SignInPage() {
           type="password"
           autoComplete="current-password"
           onChange={(e) => setPassword(e.target.value)}
+          disabled={attempingSignIn}
           required
         />
-        <button type="submit" disabled={attemptSignIn}>
+        <button
+          data-test="sign-in-submit"
+          type="submit"
+          disabled={attempingSignIn}
+        >
           Entrar
         </button>
       </form>
