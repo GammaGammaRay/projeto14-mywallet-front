@@ -6,13 +6,14 @@ import { UserContext } from "../contexts/UserContext";
 import { v4 as uuid } from "uuid";
 import { useNavigate } from "react-router-dom";
 import { listTransactions } from "../services/api.js/api";
+
+
 export default function HomePage() {
   const { auth, userSignOut } = useContext(UserContext);
   const navigate = useNavigate();
 
   const [transactions, setTransactions] = useState([]);
   const [balance, setBalance] = useState(0);
-
 
   useEffect(() => {
     function success(data) {
@@ -26,7 +27,9 @@ export default function HomePage() {
     navigate("/");
     userSignOut();
   }
-  
+
+  console.log(transactions);
+
   return (
     <HomeContainer>
       <Header>
@@ -48,7 +51,13 @@ export default function HomePage() {
                   <span>{transaction.date}</span>
                   <strong>{transaction.description}</strong>
                 </div>
-                <Value color={transaction.type === "entrada" ? "positivo" : "negativo"}>{transaction.amount}</Value>
+                <Value
+                  color={
+                    transaction.type === "entrada" ? "positivo" : "negativo"
+                  }
+                >
+                  {transaction.amount}
+                </Value>
               </ListItemContainer>
             );
           })}
@@ -56,7 +65,10 @@ export default function HomePage() {
 
         <article>
           <strong>Saldo</strong>
-          <Value color={balance >= 0 ? "positivo" : "negativo"}>
+          <Value
+            data-test="total-amount"
+            color={balance >= 0 ? "positivo" : "negativo"}
+          >
             {balance.toFixed(2).toString().replace(".", ",")}
           </Value>
         </article>
