@@ -58,6 +58,7 @@ function listTransactions(auth, success, failure) {
         failure();
       });
   }
+  
   function addTransaction(obj, auth, success, failure) {
     axios
       .post(`/addTransaction/`, obj, tokenProvider(auth))
