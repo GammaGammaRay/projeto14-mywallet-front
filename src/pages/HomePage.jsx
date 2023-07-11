@@ -13,66 +13,24 @@ export default function HomePage() {
   const [transactions, setTransactions] = useState([]);
   const [balance, setBalance] = useState(0);
 
-  useEffect(() => {
-    if (localStorage.getItem("auth") == undefined) {
-      navigate("/");
-      return;
-    }
-    // GetTransactions(localStorage.getItem("token"), updateTransactions);
-  }, []);
 
   useEffect(() => {
     function success(data) {
-      if (data.length === 0) {
-        setLoading(false);
-      }
       setTransactions(data);
     }
+
     listTransactions(auth.token, success);
   }, []);
-
-  function updateTransactions(userTransactions, error) {
-    if (error) {
-      alert(userTransactions.data.response.message);
-      return;
-    }
-
-    setTransactions(userTransactions.transactions.reverse());
-    setUser(userTransactions.username);
-    setBalance(userTransactions.balance);
-  }
 
   function handleUserSignOut() {
     navigate("/");
     userSignOut();
   }
-  {
-    /* <ul>
-          {transactions.map((transaction) => {
-            if (transaction.type === "entrada") {
-              balance += transaction.amount;
-            } else {
-              balance -= transaction.amount;
-            }
-            return (
-              <ListItemContainer>
-                id={transaction._id}
-                key={transaction._id}
-                transactions={transactions}
-                setTransactions={setTransactions}
-                date={transaction.date}
-                description={transaction.description}
-                amount={transaction.amount}
-                type={transaction.type}
-              </>
-            );
-          })}
-        </ul> */
-  }
+  
   return (
     <HomeContainer>
       <Header>
-        <h1>{`Olá, ${auth.name}`}</h1>
+        <h1 data-test="user-name">{`Olá, ${auth.name}`}</h1>
         <BiExit data-test="logout" onClick={handleUserSignOut} />
       </Header>
 
@@ -90,26 +48,10 @@ export default function HomePage() {
                   <span>{transaction.date}</span>
                   <strong>{transaction.description}</strong>
                 </div>
-                <Value color={"negativo"}>{transaction.amount}</Value>
+                <Value color={transaction.type === "entrada" ? "positivo" : "negativo"}>{transaction.amount}</Value>
               </ListItemContainer>
             );
           })}
-
-          <ListItemContainer>
-            <div>
-              <span>30/11</span>
-              <strong>Almoço mãe</strong>
-            </div>
-            <Value color={"negativo"}>120,00</Value>
-          </ListItemContainer>
-
-          <ListItemContainer>
-            <div>
-              <span>15/11</span>
-              <strong>Salário</strong>
-            </div>
-            <Value color={"positivo"}>3000,00</Value>
-          </ListItemContainer>
         </ul>
 
         <article>
