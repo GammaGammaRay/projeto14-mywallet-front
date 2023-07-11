@@ -14,22 +14,28 @@ export default function HomePage() {
   const [transactions, setTransactions] = useState([]);
   const [balance, setBalance] = useState(0);
 
-  function success(data) {
-    if (!auth) navigate("/");
-    setTransactions(data);
-  }
 
   useEffect(() => {
+    if (!auth || !auth.token) {
+      navigate("/"); 
+    }
+  }, [auth, navigate]);
+
+  useEffect(() => {
+    function success(data) {
+      setTransactions(data);
+    }
+
     listTransactions(auth.token, success);
-  }, []);
+  }, [auth, navigate]);
 
   useEffect(() => {
     let calculatedBalance = 0;
     transactions.forEach((transaction) => {
       if (transaction.type === "entrada") {
-        calculatedBalance += transaction.amount;
+        calculatedBalance += parseFloat(transaction.amount);
       } else {
-        calculatedBalance -= transaction.amount;
+        calculatedBalance -= parseFloat(transaction.amount);
       }
     });
     setBalance(calculatedBalance);
@@ -77,6 +83,7 @@ export default function HomePage() {
             color={balance >= 0 ? "positivo" : "negativo"}
           >
             {balance.toFixed(2).toString().replace(".", ",")}
+            {/* {balance} */}
           </Value>
         </article>
       </TransactionsContainer>
